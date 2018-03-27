@@ -2,6 +2,7 @@ package cn.pavelyq.collectios;
 
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 /**
  * Created by Pavel on 2018/3/27.
@@ -58,7 +59,7 @@ public abstract class MyAbstractList<E> extends MyAbstractCollection<E> implemen
     @Override
     public int lastIndexOf(Object o) {
         int size = size();
-        for (int i = size-1; i >= 0; i--) {
+        for (int i = size - 1; i >= 0; i--) {
             E e = get(i);
             if (o == null) {
                 if (e == null) {
@@ -73,29 +74,41 @@ public abstract class MyAbstractList<E> extends MyAbstractCollection<E> implemen
         return -1;
     }
 
-    private class MyItr implements Iterator<E>{
+    private class MyItr implements Iterator<E> {
         /**
          * 游标 当前扫描的元素位置
          */
-        private int corsor = 0;
+        private int cursor = 0;
 
         /**
          *
          */
         int lastRet = -1;
 
+
         @Override
         public boolean hasNext() {
-            return false;
+            return cursor != size();
         }
 
         @Override
         public E next() {
-            return null;
+
+            try {
+                int i = cursor;
+                E e = get(i);
+                lastRet = i;
+                cursor = i + 1;
+                return e;
+                //有可能发生越界
+            } catch (IndexOutOfBoundsException e) {
+                throw new NoSuchElementException();
+            }
+
         }
     }
 
-    private class MyListItr extends  MyItr implements ListIterator<E>{
+    private class MyListItr extends MyItr implements ListIterator<E> {
 
         @Override
         public boolean hasPrevious() {
